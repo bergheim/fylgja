@@ -1,0 +1,28 @@
+# Build outputs
+*.iml
+*.apk
+*.aab
+*.ap_
+*.dex
+build/
+.gradle/
+local.properties
+captures/
+
+# IDE
+.idea/
+*.swp
+*~
+.DS_Store
+.vscode/
+
+# Android/Gradle
+*.log
+*.hprof
+.externalNativeBuild/
+.cxx/
+
+# Secrets
+*.keystore
+*.jks
+google-services.json

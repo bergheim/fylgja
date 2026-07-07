@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:label="Fylgja"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Fylgja">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Fylgja">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Counter Widget -->
+        <receiver
+            android:name=".CountWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/count_widget_info" />
+        </receiver>
+
+        <!-- Graph Widget -->
+        <receiver
+            android:name=".GraphWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/graph_widget_info" />
+        </receiver>
+
+        <!-- Counter Service (optional) -->
+        <service
+            android:name=".CounterService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false" />
+
+        <!-- Tap broadcast receiver for widgets -->
+        <receiver
+            android:name=".WidgetTapReceiver"
+            android:exported="false" />
+
+    </application>
+</manifest>
