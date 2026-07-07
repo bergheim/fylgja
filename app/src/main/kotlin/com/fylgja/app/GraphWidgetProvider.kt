@@ -73,7 +73,7 @@ class GraphWidgetProvider : AppWidgetProvider() {
                 }
                 canvas.drawText("${habit.icon} ${habit.name}", 8f, 20f, textPaint)
 
-                rv.setImageViewBitmap(android.R.id.icon, bitmap)
+                rv.setImageViewBitmap(R.id.widget_image, bitmap)
 
                 // Tap to refresh
                 val refreshIntent = Intent(context, WidgetTapReceiver::class.java).apply {
@@ -82,7 +82,7 @@ class GraphWidgetProvider : AppWidgetProvider() {
                 }
                 val pi = PendingIntent.getBroadcast(context, id * 2 + 1, refreshIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-                rv.setOnClickPendingIntent(android.R.id.icon, pi)
+                rv.setOnClickPendingIntent(R.id.widget_image, pi)
 
                 mgr.updateAppWidget(id, rv)
             }
