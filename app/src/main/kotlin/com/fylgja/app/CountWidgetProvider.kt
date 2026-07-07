@@ -54,14 +54,11 @@ class CountWidgetProvider : AppWidgetProvider() {
     }
 
     private fun buildCounterView(context: Context, habit: Habit): RemoteViews {
-        val rv = RemoteViews(context.packageName, android.R.layout.simple_list_item_1)
-        // Use widget_layout via RemoteViews - but Android requires RemoteViews-compatible layouts
-        // Use our custom widget_layout
-        val rv2 = RemoteViews(context.packageName, R.layout.widget_layout)
+        val rv = RemoteViews(context.packageName, R.layout.widget_layout)
         val bgColor = try { Color.parseColor(habit.color + "22") } catch (e: Exception) { Color.parseColor("#3498db22") }
-        rv2.setInt(android.R.id.text1, "setBackgroundColor", bgColor)
-        rv2.setTextViewText(android.R.id.text1, "${habit.icon}\n${habit.todayCount()}")
-        rv2.setTextViewColor(android.R.id.text1, Color.BLACK)
+        rv.setInt(android.R.id.text1, "setBackgroundColor", bgColor)
+        rv.setTextViewText(android.R.id.text1, "${habit.icon}\n${habit.todayCount()}")
+        rv.setTextViewColor(android.R.id.text1, Color.BLACK)
 
         // Tap action
         val tapIntent = Intent(context, WidgetTapReceiver::class.java).apply {
@@ -70,9 +67,9 @@ class CountWidgetProvider : AppWidgetProvider() {
         }
         val pi = PendingIntent.getBroadcast(context, habit.name.hashCode(), tapIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        rv2.setOnClickPendingIntent(android.R.id.text1, pi)
+        rv.setOnClickPendingIntent(android.R.id.text1, pi)
 
-        return rv2
+        return rv
     }
 
     private fun emptyViews(msg: String): RemoteViews {

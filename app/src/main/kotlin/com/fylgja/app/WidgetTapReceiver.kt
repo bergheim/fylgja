@@ -34,7 +34,11 @@ class WidgetTapReceiver : BroadcastReceiver() {
 
                     val mgr = AppWidgetManager.getInstance(context)
                     val ids = mgr.getAppWidgetIds(ComponentName(context, CountWidgetProvider::class.java))
-                    mgr.notifyAppWidgetUpdate(ids)
+                    val updateIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE).apply {
+                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                        component = ComponentName(context, CountWidgetProvider::class.java)
+                    }
+                    context.sendBroadcast(updateIntent)
                 }
             }
 
