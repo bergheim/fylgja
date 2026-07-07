@@ -32,22 +32,41 @@ jobs:
     - name: Build debug APK
       id: build
       run: |
-        ./gradlew assembleDebug --stacktrace --info 2>&1 | tee build.log
-        echo "exit_code=$?" >> $GITHUB_OUTPUT
-        cp build.log app/build/outputs/apk/debug/build.log
+        set -o pipefail
+        ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log || echo "BUILD_FAILED=1" >> $GITHUB_ENV
+        if [ "$BUILD_FAILED" = "1" ]; then
+          echo "::error::Build failed. See build.log artifact."
+          # Print errors inline for visibility (even without log-download)
+          echo "=== BUILD ERRORS (first 80 lines of errors/warnings) ==="
+          grep -iE "^(e:|w:|error|fail|exception|\s*at\s+\w)" build.log | head -80
+          exit 1
+        fi
 
-    - name: Upload APK artifact
+    - name: Upload artifacts
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: fylgja-build-output
         path: |
           app/build/outputs/apk/**/*.apk
-          app/build/outputs/apk/debug/build.log
+          build.log
         retention-days: 7
 
-    - name: Comment on failure
+    - name: Commit build log on failure
       if: failure()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "::error::Build failed. Check build.log artifact for details."
-        tail -100 build.log | grep -iE "error|exception|FAIL" | head -30
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git fetch origin build-log || git checkout --orphan build-log
+        git checkout build-log
+        git rm -rf . 2>/dev/null || true
+        cp "${{ github.workspace }}/build.log" ./build.log 2>/dev/null || true
+        # Also copy any kotlin compiler error output
+        find build -name "*.log" -exec cp {} . \; 2>/dev/null || true
+        git add -f build.log *.log 2>/dev/null || true
+        if ! git diff --cached --quiet; then
+          git commit -m "Build failure log: run ${{ github.run_id }}"
+          git push origin build-log --force
+        fi
